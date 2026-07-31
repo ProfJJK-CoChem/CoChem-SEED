@@ -1,0 +1,28 @@
+{
+    "CoChem_Version": "SEED_1.0",
+    "Execution_Tier": "Pedagogical",
+    "Paths": {
+        "curriculum_vault": "seed_curriculum.db",
+        "telemetry_export": "eval_telemetry.json"
+    },
+    "Compute_Guardrails": {
+        "hardware_probing_enabled": false,
+        "allow_local_execution": false,
+        "force_github_actions": true,
+        "actions_queue_timeout_seconds": 180
+    },
+    "Scientific_Defaults": {
+        "implicit_solvation_model": "ALPB",
+        "solvent": "Acetone",
+        "thermodynamic_labeling": "Electronic Energy (E_elec)"
+    },
+    "UI_Settings": {
+        "progressive_disclosure": true,
+        "socratic_hints_enabled": true,
+        "unphysical_fit_traps": true
+    },
+    "Data_Privacy": {
+        "ferpa_compliant_salting": true,
+        "static_vault_verification": true
+    }
+}

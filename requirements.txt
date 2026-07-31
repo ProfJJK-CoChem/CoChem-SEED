@@ -1,0 +1,8 @@
+﻿CoChem-SEED Pinned Dependencies
+Pedagogical cloud-native UI environment (Compute engines deferred to Actions)
+ipywidgets8.1.1
+plotly5.18.0
+nbconvert7.14.2
+py3Dmol2.0.4
+rdkit2023.9.5
+requests2.31.0
