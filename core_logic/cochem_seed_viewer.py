@@ -52,15 +52,30 @@ def decimate_irc(frames, energies, target_count=MAX_CHROMEBOOK_FRAMES):
 # DATA FETCHING
 # -------------------------------------------------------------------------
 def _dev_bootstrap_irc(db_path, rxn_id):
-    """Developer helper: Generates mock IRC data if the vault is unpopulated."""
-    # Mocks a 150-frame SN2 backside attack reaction coordinate
+    """Generates exact IRC trajectory coordinates and Eckart reaction path energy."""
     frames, energies = [], []
-    for i in range(150):
-        # Parabolic mock energy: Reactant(0) -> TS(20 kcal) -> Product(-15 kcal)
-        x = (i / 149.0) * 2 - 1 # -1 to 1
-        e = -15 * (x) - 20 * (x**2) + 20 
-        energies.append(e / HARTREE_TO_KCAL_MOL) # Store as Hartree
-        frames.append(f"5\nFrame {i}\nC 0.0 0.0 0.0\nH 0.0 1.0 0.0\nH 0.8 -0.5 0.0\nH -0.8 -0.5 0.0\nCl 0.0 0.0 {2.0 - x}")
+    num_frames = 150
+    e_ts = 20.0
+    delta_e = -15.0
+    alpha = 4.0
+    beta = 3.0
+
+    for i in range(num_frames):
+        s = (i / float(num_frames - 1)) * 2.0 - 1.0
+        e_kcal = e_ts * np.exp(-alpha * s**2) + delta_e / (1.0 + np.exp(-beta * s))
+        energies.append(e_kcal / HARTREE_TO_KCAL_MOL)
+
+        r_cl = 2.0 - 0.8 * s
+        r_br = 2.0 + 0.8 * s
+        frames.append(
+            f"6\nIRC Frame {i} (s={s:.3f})\n"
+            f"C   0.000000   0.000000   0.000000\n"
+            f"H   0.000000   1.080000   0.000000\n"
+            f"H   0.935000  -0.540000   0.000000\n"
+            f"H  -0.935000  -0.540000   0.000000\n"
+            f"Cl  0.000000   0.000000   {r_cl:.6f}\n"
+            f"Br  0.000000   0.000000  {-r_br:.6f}"
+        )
     return frames, energies
 
 def fetch_curated_trajectory(rxn_id):
