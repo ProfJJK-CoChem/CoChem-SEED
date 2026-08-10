@@ -1,6 +1,7 @@
 import os
+from pathlib import Path
 
-filepath = r"D:\GitHub-Repo\CoChem-SEED\architecture.md"
+filepath = Path(__file__).resolve().parent / "architecture.md"
 
 content = r"""# CoChem-SEED: Standalone Codespace GUI Architecture
 **Date:** 2026-08-07

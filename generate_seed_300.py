@@ -1,6 +1,7 @@
 import os
+from pathlib import Path
 
-filepath = r"D:\GitHub-Repo\CoChem-SEED\suggestions.md"
+filepath = Path(__file__).resolve().parent / "suggestions.md"
 
 header = r"""# 300 Enhancements for CoChem-SEED: The Pedagogical Revolution
 **Date:** 2026-08-07

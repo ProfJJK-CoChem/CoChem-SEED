@@ -28,17 +28,17 @@ CoChem-SEED/
 ```
 
 ## 2. GitHub Classroom 50 & Codespace Independence
-This repository is designed to be pushed via GitHub Classroom to groups of 24 students simultaneously. We will setup the Assignment settings in Classroom 50 (Advanced Settings) to invisibly deploy the python, OS, and other dependencies within the GitHub classroom codespace.
+This repository is designed to be pushed via GitHub Classroom to groups of 24 students simultaneously.
 * **No Code Visibility:** Students will not interact with Python files or Jupyter notebooks. 
-* **Zero Friction Bootstrapping:** When a student opens the repository, the `.devcontainer` configuration automatically installs the backend dependencies and starts the Vite frontend. The student simply clicks the forwarded web link to enter the premium CoChem GUI. This guarantees absolute independence while the professor tours the lab.
+* **Zero Friction Bootstrapping:** When a student opens the repository in a GitHub Codespace, the `.devcontainer` configuration automatically installs the Python dependencies, boots the FastAPI backend, and starts the Vite frontend on port `3000`. The student simply clicks the forwarded web link to enter the premium CoChem GUI. This guarantees absolute independence while the professor tours the lab.
 
 ## 3. Self-Contained Specialist Physics Engine
 Because SEED is independent of the HPC pipeline (`CoChem-BASE` / `NODE`), it cannot send ZeroMQ payloads for expensive DFT calculations.
 * **Bundled Physics:** The Codespace container natively bundles highly accurate Machine Learning Force Fields (MLFF), specifically **MACE-OFF24**, **MACE IR**, **Thessues**, and other specialist models for precise spectroscopic predictions.
 * **Rapid Execution:** When a student asks to see the $1700$ cm$^{-1}$ stretch of a ketone, FastAPI executes a localized **MACE IR** calculation directly inside the 2-core Codespace, extracting the precise Hessian and streaming the coordinates to Molstar in less than 500 milliseconds. Similarly, **MACE-OFF24** is used for instantaneous and flawless 3D coordinate generation from SMILES.
 
-## 4. Electron Desktop Fallback (Standalone .exe)
-If a student's Codespace connection drops or they prefer offline study, the `electron_fallback/` directory contains an Electron shell. We will use the identical interface mocked up for CoChem-GUI, bundled with an `.exe` to launch. This allows the exact same React/FastAPI stack to be deployed as a standalone native Windows executable.
+## 4. Electron Desktop Fallback
+If a student's Codespace connection drops or they prefer offline study, the `electron_fallback/` directory contains an Electron shell. This allows the exact same React/FastAPI stack to be bundled via PyInstaller and deployed as a standalone native Windows `.exe`.
 
 ## 5. Dynamic Database Sourcing
 - `api_nist.py` and `api_sdbs.py` operate completely independently. The FastAPI backend fetches `.jdx` files on-the-fly and overlays the student's theoretical predictions atop raw, noisy experimental data.

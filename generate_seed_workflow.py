@@ -1,6 +1,7 @@
 import os
+from pathlib import Path
 
-filepath = r"D:\GitHub-Repo\CoChem-SEED\workflow.md"
+filepath = Path(__file__).resolve().parent / "workflow.md"
 
 content = r"""# CoChem-SEED: Master Coding Specification & Workflow
 **Date:** 2026-08-07

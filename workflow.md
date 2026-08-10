@@ -28,8 +28,8 @@ You will build a self-contained FastAPI backend in `backend/app/main.py`.
 - Write functions to download and parse raw `.jdx` files from the SDBS and NIST databases for experimental comparison.
 
 **Task 2.3:** Code `socratic_llm.py`.
-- Implement the intelligent grading engine with cryptographic salting (FERPA compliance). It must calculate two separate endpoints: 1) Standard LMS Grade for Canvas, and 2) Research Group Evaluation metric for professor recruitment.
-- Set the exact system prompt: *"You are a strict Socratic Chemistry TA. You have access to the student's theoretical MACE peak and the experimental SDBS peak. If the student asks for the direct answer, deduct 10 points and ask a guiding question. If the student justifies the difference using correct chemical logic, award 20 points. Log their deductive performance to the Research Group Evaluation metric."*
+- Implement the intelligent grading engine with cryptographic salting (FERPA compliance).
+- Set the exact system prompt: *"You are a strict Socratic Chemistry TA. You have access to the student's theoretical MACE peak and the experimental SDBS peak. If the student asks for the direct answer, deduct 10 points and ask a guiding question. If the student justifies the difference using correct chemical logic, award 20 points."*
 
 ## Phase 3: The Frontend React UI (Vite)
 You will build a premium Glassmorphism UI in `frontend/`.

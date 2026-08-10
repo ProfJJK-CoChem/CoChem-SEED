@@ -34,12 +34,23 @@ def _dev_bootstrap_db(db_path):
     cursor.execute('''CREATE TABLE IF NOT EXISTS reactions 
                       (id INTEGER PRIMARY KEY, rxn_class TEXT, name TEXT, target_smiles TEXT)''')
     
-    # Pedagogical Edge-Case Mocks (Suggestion #5)
+    # Curated Organic Chemistry Reactions Dataset (MOCK-28 / Suggestion 28 Resolved)
     mocks = [
-        ("SN2", "Primary Halide (Standard)", "CCCl"),
+        ("SN2", "Primary Halide - Chloromethane", "CCl"),
+        ("SN2", "Primary Halide - Chloroethane", "CCCl"),
+        ("SN2", "Secondary Halide - 2-Chloropropane", "CC(C)Cl"),
         ("SN2", "Tertiary Halide (Steric Trap)", "CC(C)(C)Cl"),
-        ("E2", "Zaitsev Product Bias", "CC(Br)CC"),
-        ("SN1", "Tertiary Carbocation Intermediate", "CC(C)(C)Br")
+        ("SN1", "Tertiary Carbocation - t-Butyl Chloride", "CC(C)(C)Cl"),
+        ("SN1", "Tertiary Carbocation - 2-Bromo-2-methylbutane", "CCC(C)(C)Br"),
+        ("E2", "Zaitsev Product Bias - 2-Bromobutane", "CC(Br)CC"),
+        ("E2", "Hofmann Product Bias - 2-Bromo-2,3-dimethylbutane", "CC(C)C(C)(Br)C"),
+        ("E1", "Acid-Catalyzed Dehydration - Cyclohexanol", "C1CCCCCC1O"),
+        ("Electrophilic Addition", "Alkene Bromination - Ethene", "C=C"),
+        ("Electrophilic Addition", "Markovnikov Hydration - Propene", "CC=C"),
+        ("Electrophilic Addition", "Anti-Markovnikov Hydroboration - Propene", "CC=C"),
+        ("Diels-Alder", "1,3-Butadiene + Ethylene", "C=CC=C"),
+        ("Aromatic Substitution", "Benzene Nitration", "c1ccccc1"),
+        ("Aromatic Substitution", "Toluene Friedel-Crafts Alkylation", "Cc1ccccc1")
     ]
     cursor.executemany("INSERT OR IGNORE INTO reactions (rxn_class, name, target_smiles) VALUES (?, ?, ?)", mocks)
     conn.commit()

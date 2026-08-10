@@ -5,21 +5,28 @@ Procedural problem generation for rotational spectroscopy, IR vibrational modes,
 
 import math
 import random
-from typing import Dict, Any, List
+import hashlib
+from typing import Dict, Any, List, Optional
 
 class SeedRotationalGenerator:
     ROTATION_CONSTANT_FACTOR = 505379.005
 
-    def generate_problem(self, difficulty: int = 1) -> Dict[str, Any]:
+    def _get_rng(self, seed: Optional[int] = None) -> random.Random:
+        if seed is not None:
+            return random.Random(int(seed))
+        return random
+
+    def generate_problem(self, difficulty: int = 1, seed: Optional[int] = None) -> Dict[str, Any]:
+        rng = self._get_rng(seed)
         if difficulty == 1:
-            I_a = round(random.uniform(15.0, 45.0), 4)
-            I_b = round(random.uniform(50.0, 120.0), 4)
+            I_a = round(rng.uniform(15.0, 45.0), 4)
+            I_b = round(rng.uniform(50.0, 120.0), 4)
             I_c = I_b
             rotor = "prolate"
         else:
-            I_a = round(random.uniform(15.0, 35.0), 4)
-            I_b = round(random.uniform(40.0, 80.0), 4)
-            I_c = round(random.uniform(85.0, 160.0), 4)
+            I_a = round(rng.uniform(15.0, 35.0), 4)
+            I_b = round(rng.uniform(40.0, 80.0), 4)
+            I_c = round(rng.uniform(85.0, 160.0), 4)
             rotor = "asymmetric"
 
         A = round(self.ROTATION_CONSTANT_FACTOR / I_a, 2)
@@ -50,9 +57,15 @@ class SeedRotationalGenerator:
 class SeedIRGenerator:
     FUNCTIONAL_GROUPS = ["O-H", "N-H", "C=O", "C-H sp3", "C-H sp2", "C=C"]
 
-    def generate_problem(self, difficulty: int = 1) -> Dict[str, Any]:
+    def _get_rng(self, seed: Optional[int] = None) -> random.Random:
+        if seed is not None:
+            return random.Random(int(seed))
+        return random
+
+    def generate_problem(self, difficulty: int = 1, seed: Optional[int] = None) -> Dict[str, Any]:
+        rng = self._get_rng(seed)
         num_active = min(2 + difficulty, 4)
-        active = random.sample(self.FUNCTIONAL_GROUPS, num_active)
+        active = rng.sample(self.FUNCTIONAL_GROUPS, num_active)
         eliminated = [g for g in self.FUNCTIONAL_GROUPS if g not in active]
         return {
             "active_groups": active,
@@ -79,9 +92,15 @@ class SeedNMRGenerator:
         {"name": "Isopropyl", "peaks": [{"shift": 1.1, "mult": "Doublet"}, {"shift": 4.0, "mult": "Septet"}]}
     ]
 
-    def generate_problem(self, difficulty: int = 1) -> Dict[str, Any]:
-        pat = random.choice(self.PATTERNS)
-        offset = round(random.uniform(-0.2, 0.2), 2)
+    def _get_rng(self, seed: Optional[int] = None) -> random.Random:
+        if seed is not None:
+            return random.Random(int(seed))
+        return random
+
+    def generate_problem(self, difficulty: int = 1, seed: Optional[int] = None) -> Dict[str, Any]:
+        rng = self._get_rng(seed)
+        pat = rng.choice(self.PATTERNS)
+        offset = round(rng.uniform(-0.2, 0.2), 2)
         peaks = [{"shift": round(p["shift"] + offset, 2), "mult": p["mult"]} for p in pat["peaks"]]
         return {"pattern": pat["name"], "peaks": peaks, "difficulty": difficulty}
 
