@@ -14,10 +14,15 @@ PARAMS_PATH = pathlib.Path("seed_run_params.json")
 DB_PATH = pathlib.Path("seed_curriculum.db")
 TELEMETRY_PATH = pathlib.Path("eval_telemetry.json")
 
+import logging
+
+logger = logging.getLogger("CoChem_SEED_Spectra")
+
+
 # -------------------------------------------------------------------------
 # DATA MOCKING & PARSING (For Vault Integration)
 # -------------------------------------------------------------------------
-def _dev_bootstrap_spectra():
+def _dev_bootstrap_spectra() -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Generates analytical Lorentzian/Gaussian spectral lineshapes."""
     x = np.linspace(400, 4000, 1000)
     y_exp = 0.1 + 1e-6 * (x - 2000)**2
@@ -32,7 +37,7 @@ def _dev_bootstrap_spectra():
     y_theory = np.array([1.4, 0.7, 1.1])
     return x, y_exp, x_theory, y_theory
 
-def fetch_spectra_data(rxn_id, mode="curated"):
+def fetch_spectra_data(rxn_id: str | int | None, mode: str = "curated") -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Pulls experimental spectra and theoretical tensors from the curriculum vault database."""
     if DB_PATH.exists():
         try:
@@ -56,15 +61,19 @@ def fetch_spectra_data(rxn_id, mode="curated"):
 # -------------------------------------------------------------------------
 # UI & TRAP MECHANICS
 # -------------------------------------------------------------------------
-def render_spectra_fitter():
+def render_spectra_fitter() -> None:
     if not PARAMS_PATH.exists() or not CONFIG_PATH.exists():
         display(HTML("<span style='color: red;'>Missing configuration. Run Stages 1-3 first.</span>"))
         return
 
-    with open(PARAMS_PATH, "r") as f:
-        params = json.load(f)
-    with open(CONFIG_PATH, "r") as f:
-        cfg = json.load(f)
+    with open(PARAMS_PATH, "r", encoding="utf-8") as f:
+        params = json.loads(f.read())
+    try:
+        from cochem_base.config_loader import load_system_config_dict
+        cfg = load_system_config_dict(CONFIG_PATH)
+    except ImportError:
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            cfg = json.loads(f.read())
 
     use_traps = cfg.get("UI_Settings", {}).get("unphysical_fit_traps", True)
     
@@ -90,7 +99,7 @@ def render_spectra_fitter():
     plot_out = widgets.Output()
     msg_out = widgets.Output()
 
-    def update_plot(scale, shift):
+    def update_plot(scale: float, shift: float) -> None:
         with msg_out:
             msg_out.clear_output()
             # -------------------------------------------------------------
@@ -140,7 +149,7 @@ def render_spectra_fitter():
             )
             fig.show()
 
-    def on_hint_clicked(b):
+    def on_hint_clicked(b: Any) -> None:
         state["hints_used"] += 1
         with msg_out:
             msg_out.clear_output()
@@ -151,11 +160,11 @@ def render_spectra_fitter():
                 "</div>"
             ))
 
-    def on_lock_clicked(b):
+    def on_lock_clicked(b: Any) -> None:
         state["final_scale"] = scale_slider.value
         state["final_shift"] = shift_slider.value
         
-        with open(TELEMETRY_PATH, "w") as f:
+        with open(TELEMETRY_PATH, "w", encoding="utf-8") as f:
             json.dump(state, f, indent=4)
             
         with msg_out:

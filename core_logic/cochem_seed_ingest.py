@@ -15,19 +15,28 @@ PARAMS_OUTPUT_PATH = pathlib.Path("seed_run_params.json")
 # after building the authoritative SQLite curriculum vault.
 CANONICAL_VAULT_HASH = "DEVELOPMENT_MODE_UNLOCKED" 
 
+import logging
+
+logger = logging.getLogger("CoChem_SEED_Ingest")
+
+
 # -------------------------------------------------------------------------
 # CORE LOGIC & SECURITY GUARDS
 # -------------------------------------------------------------------------
-def load_config():
+def load_config() -> dict | None:
     """Loads the authoritative system configuration, enforcing the air-gap."""
     if not CONFIG_PATH.exists():
         display(HTML("<div style='color: white; background-color: #b91c1c; padding: 10px; border-radius: 5px; font-family: monospace;'>"
                      "<b>CRITICAL ERROR:</b> cochem_system_config.json not found. Run Stage 0.0 first.</div>"))
         return None
-    with open(CONFIG_PATH, "r") as f:
-        return json.load(f)
+    try:
+        from cochem_base.config_loader import load_system_config_dict
+        return load_system_config_dict(CONFIG_PATH)
+    except ImportError:
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            return json.loads(f.read())
 
-def _dev_bootstrap_db(db_path):
+def _dev_bootstrap_db(db_path: pathlib.Path) -> None:
     """Developer helper: Mocks the curriculum database if it doesn't exist yet."""
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -56,7 +65,7 @@ def _dev_bootstrap_db(db_path):
     conn.commit()
     conn.close()
 
-def verify_vault_integrity(db_path, strict_mode=True):
+def verify_vault_integrity(db_path: pathlib.Path, strict_mode: bool = True) -> bool:
     """Performs a SHA-256 chunked hash check to prevent student tampering."""
     if not db_path.exists():
         _dev_bootstrap_db(db_path) # Auto-generate for testing if missing
@@ -77,7 +86,7 @@ def verify_vault_integrity(db_path, strict_mode=True):
             return False
     return True
 
-def fetch_curriculum_options(db_path):
+def fetch_curriculum_options(db_path: pathlib.Path) -> dict:
     """Extracts the available curated reactions for the progressive disclosure UI."""
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -96,7 +105,7 @@ def fetch_curriculum_options(db_path):
 # -------------------------------------------------------------------------
 # PROGRESSIVE DISCLOSURE UI (IPYWIDGETS)
 # -------------------------------------------------------------------------
-def render_ui():
+def render_ui() -> None:
     cfg = load_config()
     if not cfg: return
     
@@ -139,7 +148,7 @@ def render_ui():
     output_console = widgets.Output()
     
     # --- Interactivity Observers ---
-    def on_class_change(change):
+    def on_class_change(change: Any) -> None:
         selected_class = change['new']
         if selected_class == "Novel Target (Advanced)":
             reaction_dropdown.disabled = True
@@ -153,7 +162,7 @@ def render_ui():
             
     class_dropdown.observe(on_class_change, names='value')
     
-    def on_submit(b):
+    def on_submit(b: Any) -> None:
         with output_console:
             output_console.clear_output()
             

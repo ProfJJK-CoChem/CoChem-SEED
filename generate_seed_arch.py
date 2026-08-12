@@ -53,4 +53,7 @@ If a student's Codespace connection drops or they prefer offline study, the `ele
 with open(filepath, 'w', encoding='utf-8') as f:
     f.write(content)
 
-print(f"Generated architecture document at {filepath}")
+import logging
+
+logger = logging.getLogger("Generate_Seed_Arch")
+logger.info(f"Generated architecture document at {filepath}")

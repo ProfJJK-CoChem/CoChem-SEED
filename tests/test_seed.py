@@ -15,7 +15,7 @@ from core_logic.seed_active_learning import SeedRotationalGenerator, SeedIRGener
 from core_logic.cochem_seed_spectra import fetch_spectra_data
 from core_logic.cochem_seed_dispatch import generate_3d_target, provision_actions_backend
 
-def test_seed_rotational_generator():
+def test_seed_rotational_generator() -> None:
     gen = SeedRotationalGenerator()
     prob = gen.generate_problem(difficulty=1)
     assert "target" in prob
@@ -24,7 +24,7 @@ def test_seed_rotational_generator():
     assert eval_res["score"] == 100.0
     assert eval_res["passed"] is True
 
-def test_seed_ir_generator():
+def test_seed_ir_generator() -> None:
     gen = SeedIRGenerator()
     prob = gen.generate_problem(difficulty=2)
     sub = {}
@@ -34,7 +34,7 @@ def test_seed_ir_generator():
     assert eval_res["score"] == 100.0
     assert eval_res["passed"] is True
 
-def test_seed_nmr_generator():
+def test_seed_nmr_generator() -> None:
     gen = SeedNMRGenerator()
     prob = gen.generate_problem(difficulty=1)
     sub = [{"shift": p["shift"], "mult": p["mult"]} for p in prob["peaks"]]
@@ -42,13 +42,13 @@ def test_seed_nmr_generator():
     assert eval_res["score"] == 100.0
     assert eval_res["passed"] is True
 
-def test_seed_fetch_spectra():
+def test_seed_fetch_spectra() -> None:
     x, y_exp, x_th, y_th = fetch_spectra_data("rxn_001")
     assert len(x) > 0
     assert len(y_exp) > 0
     assert len(x_th) > 0
 
-def test_seed_dispatch_3d_target():
+def test_seed_dispatch_3d_target() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         target_xyz = Path(tmpdir) / "test_target.xyz"
         # Test 3D XYZ target generation from SMILES
@@ -60,7 +60,7 @@ def test_seed_dispatch_3d_target():
         Chem.MolToXYZFile(mol, str(target_xyz))
         assert target_xyz.exists()
 
-def test_seed_generators_determinism():
+def test_seed_generators_determinism() -> None:
     rot_gen = SeedRotationalGenerator()
     p1 = rot_gen.generate_problem(difficulty=1, seed=42)
     p2 = rot_gen.generate_problem(difficulty=1, seed=42)
@@ -71,7 +71,7 @@ def test_seed_generators_determinism():
     i2 = ir_gen.generate_problem(difficulty=1, seed=42)
     assert i1 == i2, "SeedIRGenerator failed determinism check!"
 
-def test_seed_ingest_curated_db(tmp_path):
+def test_seed_ingest_curated_db(tmp_path) -> None:
     from core_logic.cochem_seed_ingest import _dev_bootstrap_db, fetch_curriculum_options
     db_file = tmp_path / "test_curriculum.db"
     _dev_bootstrap_db(db_file)

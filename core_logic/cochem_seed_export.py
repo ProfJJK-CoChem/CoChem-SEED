@@ -14,10 +14,28 @@ TELEMETRY_PATH = pathlib.Path("eval_telemetry.json")
 FERPA_RECORD_PATH = pathlib.Path("cochem_ferpa_record.json")
 NOTEBOOK_NAME = "CoChem_SEED_Lab.ipynb" # Default pedagogical entry point
 
+import logging
+import sys
+
+logger = logging.getLogger("CoChem_SEED_Export")
+
+def _get_safe_subprocess_run() -> Any:
+    try:
+        from core_engine.cochem_core_subprocess_broker import safe_subprocess_run
+        return safe_subprocess_run
+    except ImportError:
+        for p in pathlib.Path(__file__).resolve().parents:
+            cb = p / "CoChem-BASE"
+            if cb.exists() and str(cb) not in sys.path:
+                sys.path.insert(0, str(cb))
+                break
+        from core_engine.cochem_core_subprocess_broker import safe_subprocess_run
+        return safe_subprocess_run
+
 # -------------------------------------------------------------------------
 # CORE LOGIC & FERPA CRYPTOGRAPHY
 # -------------------------------------------------------------------------
-def calculate_rai(hints, traps):
+def calculate_rai(hints: int, traps: int) -> float:
     """
     Mathematically decouples memory from aptitude. 
     Applies an exponential degradation based on active assistance.
@@ -26,7 +44,7 @@ def calculate_rai(hints, traps):
     score = 100.0 * ((0.85) ** hints) * ((0.75) ** traps)
     return round(max(score, 0.0), 2)
 
-def generate_ferpa_payload(student_id, telemetry_data):
+def generate_ferpa_payload(student_id: str, telemetry_data: dict) -> dict:
     """Generates an OS-level salted hash to securely mask the student PII."""
     # OS-level cryptographic random salt
     salt = secrets.token_hex(8) 
@@ -57,13 +75,17 @@ def generate_ferpa_payload(student_id, telemetry_data):
 # -------------------------------------------------------------------------
 # UI & NBCONVERT ORCHESTRATION
 # -------------------------------------------------------------------------
-def render_export_dashboard():
+def render_export_dashboard() -> None:
     if not TELEMETRY_PATH.exists():
         display(HTML("<span style='color: #b91c1c;'><b>Error:</b> eval_telemetry.json missing. Complete Stage 4.0 first.</span>"))
         return
 
-    with open(TELEMETRY_PATH, "r") as f:
-        telemetry = json.load(f)
+    try:
+        from cochem_base.config_loader import load_system_config_dict
+        telemetry = load_system_config_dict(TELEMETRY_PATH)
+    except Exception:
+        with open(TELEMETRY_PATH, "r", encoding="utf-8") as f:
+            telemetry = json.loads(f.read())
 
     # --- UI Elements ---
     title = widgets.HTML("<h3 style='font-family: sans-serif; color: #2e3440;'>Module Completion & Export</h3>")
@@ -89,7 +111,7 @@ def render_export_dashboard():
     
     out_console = widgets.Output()
 
-    def on_export_clicked(b):
+    def on_export_clicked(b: Any) -> None:
         with out_console:
             out_console.clear_output()
             sid = student_id_input.value.strip()
@@ -103,7 +125,7 @@ def render_export_dashboard():
             
             # 1. Generate and save FERPA-compliant telemetry
             ferpa_data = generate_ferpa_payload(sid, telemetry)
-            with open(FERPA_RECORD_PATH, "w") as f:
+            with open(FERPA_RECORD_PATH, "w", encoding="utf-8") as f:
                 json.dump(ferpa_data, f, indent=4)
                 
             # 2. Nbconvert Execution (--no-input strips the Python code cells)
@@ -111,7 +133,8 @@ def render_export_dashboard():
             
             if target_notebook:
                 try:
-                    subprocess.run([
+                    safe_run = _get_safe_subprocess_run()
+                    safe_run([
                         "jupyter", "nbconvert",
                         "--to", "html",          # HTML ensures native browser support without heavy TeX engines
                         "--no-input",            # Hides code, shows only markdown and outputs
@@ -127,8 +150,8 @@ def render_export_dashboard():
                         "<i>Instructions: Open the downloaded file in your browser and select 'Print to PDF' for Canvas LMS submission.</i>"
                         "</div>"
                     ))
-                except subprocess.CalledProcessError as e:
-                    display(HTML(f"<div style='color: #b91c1c;'><b>Nbconvert Error:</b> {e.stderr.decode('utf-8')}</div>"))
+                except Exception as e:
+                    display(HTML(f"<div style='color: #b91c1c;'><b>Nbconvert Error:</b> {e}</div>"))
             else:
                 display(HTML(
                     f"<div style='color: #d08770; padding: 10px; border-radius: 5px;'>"

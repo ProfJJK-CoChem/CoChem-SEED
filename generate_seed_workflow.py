@@ -59,4 +59,7 @@ Once you have written all of the above code, you must execute the `.devcontainer
 with open(filepath, 'w', encoding='utf-8') as f:
     f.write(content)
 
-print(f"Generated workflow document at {filepath}")
+import logging
+
+logger = logging.getLogger("Generate_Seed_Workflow")
+logger.info(f"Generated workflow document at {filepath}")

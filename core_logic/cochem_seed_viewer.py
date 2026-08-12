@@ -19,10 +19,16 @@ NOVEL_TARGET_XYZ = pathlib.Path("seed_novel_target.xyz")
 MAX_CHROMEBOOK_FRAMES = 30
 HARTREE_TO_KCAL_MOL = 627.509
 
+import logging
+from typing import Any
+
+logger = logging.getLogger("CoChem_SEED_Viewer")
+
+
 # -------------------------------------------------------------------------
 # TRAJECTORY DECIMATION ENGINE
 # -------------------------------------------------------------------------
-def decimate_irc(frames, energies, target_count=MAX_CHROMEBOOK_FRAMES):
+def decimate_irc(frames: list, energies: list, target_count: int = MAX_CHROMEBOOK_FRAMES) -> tuple[list, list]:
     """
     Downsamples dense IRC trajectories to exactly 30 frames for WebGL safety.
     Rigidly ensures the Transition State (energy maximum) is never dropped.
@@ -51,7 +57,7 @@ def decimate_irc(frames, energies, target_count=MAX_CHROMEBOOK_FRAMES):
 # -------------------------------------------------------------------------
 # DATA FETCHING
 # -------------------------------------------------------------------------
-def _dev_bootstrap_irc(db_path, rxn_id):
+def _dev_bootstrap_irc(db_path: pathlib.Path, rxn_id: Any) -> tuple[list, list]:
     """Generates exact IRC trajectory coordinates and Eckart reaction path energy."""
     frames, energies = [], []
     num_frames = 150
@@ -78,7 +84,7 @@ def _dev_bootstrap_irc(db_path, rxn_id):
         )
     return frames, energies
 
-def fetch_curated_trajectory(rxn_id):
+def fetch_curated_trajectory(rxn_id: Any) -> tuple[list, list]:
     """Queries the read-only SQLite vault for the pre-packaged trajectory."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -99,13 +105,17 @@ def fetch_curated_trajectory(rxn_id):
 # -------------------------------------------------------------------------
 # INTERACTIVE UI CONSTRUCTION
 # -------------------------------------------------------------------------
-def render_viewer():
+def render_viewer() -> None:
     if not PARAMS_PATH.exists():
         display(HTML("<span style='color: red;'>Missing params. Run Stages 1 & 2 first.</span>"))
         return
 
-    with open(PARAMS_PATH, "r") as f:
-        params = json.load(f)
+    try:
+        from cochem_base.config_loader import load_system_config_dict
+        params = load_system_config_dict(PARAMS_PATH)
+    except Exception:
+        with open(PARAMS_PATH, "r") as f:
+            params = json.loads(f.read())
         
     # --- Data Routing ---
     if params.get("mode") == "novel":
@@ -115,8 +125,12 @@ def render_viewer():
             return
         with open(NOVEL_TARGET_XYZ, "r") as f:
             xyz_string = f.read()
-        with open(NOVEL_RESULTS_JSON, "r") as f:
-            res = json.load(f)
+        try:
+            from cochem_base.config_loader import load_system_config_dict
+            res = load_system_config_dict(NOVEL_RESULTS_JSON)
+        except Exception:
+            with open(NOVEL_RESULTS_JSON, "r") as f:
+                res = json.loads(f.read())
         
         energies_kcal = [0.0]
         frames = [xyz_string]

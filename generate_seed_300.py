@@ -37,4 +37,7 @@ with open(filepath, 'w', encoding='utf-8') as f:
     f.write("\n\n## 10. Core Understanding & Physics Explanations\n" + "\n".join(cat10))
     f.write("\n")
 
-print(f"Generated 300 suggestions at {filepath}")
+import logging
+
+logger = logging.getLogger("Generate_Seed_300")
+logger.info(f"Generated 300 suggestions at {filepath}")
