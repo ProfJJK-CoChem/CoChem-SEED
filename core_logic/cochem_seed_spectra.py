@@ -58,6 +58,15 @@ def fetch_spectra_data(rxn_id: str | int | None, mode: str = "curated") -> tuple
             
     return _dev_bootstrap_spectra()
 
+def simulate_ir_spectrum(molecule_str: str, engine: str = "pyscf_mace") -> dict:
+    """Zero-ORCA IR Spectral Simulation placeholder."""
+    logger.info(f"Simulating IR spectrum using engine: {engine}")
+    # Return a dummy spectrum dictionary for the pedagogical lab
+    return {
+        "frequencies": [1715.0, 2950.0, 3350.0],
+        "intensities": [1.4, 0.7, 1.1]
+    }
+
 # -------------------------------------------------------------------------
 # UI & TRAP MECHANICS
 # -------------------------------------------------------------------------

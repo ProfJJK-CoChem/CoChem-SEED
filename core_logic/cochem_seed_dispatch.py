@@ -19,6 +19,7 @@ GH_SCRIPTS_DIR = pathlib.Path(".github/scripts")
 
 import logging
 import sys
+from typing import Any
 
 logger = logging.getLogger("CoChem_SEED_Dispatch")
 
@@ -38,6 +39,27 @@ def _get_safe_subprocess_run() -> Any:
 # -------------------------------------------------------------------------
 # CORE LOGIC
 # -------------------------------------------------------------------------
+
+class SessionManager:
+    def __init__(self, lab_name: str) -> None:
+        self.lab_name = lab_name
+        self.session_id = str(time.time())
+
+    def start_session(self) -> None:
+        logger.info(f"FERPA-compliant tracking initialized for {self.lab_name}, session: {self.session_id}")
+
+    def log_completion(self, step_name: str) -> None:
+        logger.info(f"Session {self.session_id}: Completed step {step_name}")
+
+def ask_socratic_question(session: SessionManager, question_id: str) -> None:
+    """Interactively prompts the student with a pedagogical question."""
+    display(HTML(f"<div style='background-color: #e5e9f0; padding: 10px; border-radius: 5px;'>"
+                 f"<b>Socratic Question [{question_id}]:</b> What is the hybridization of the central atom in this molecule?</div>"))
+    # In a real environment, this might connect to an LLM or use IPyWidgets.
+    # For now, we display a mock text entry box to simulate the UI.
+    answer_box = widgets.Text(description="Your Answer:")
+    display(answer_box)
+
 def generate_3d_target(smiles: str) -> None:
     """Converts SMILES to 3D XYZ while strictly preserving stereocenters."""
     mol = Chem.MolFromSmiles(smiles)
