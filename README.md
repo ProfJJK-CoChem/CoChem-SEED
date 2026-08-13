@@ -1,54 +1,45 @@
-# 🌱 **CoChem-SEED: Student Evaluation & Educational Dashboard**
+# CoChem-SEED: Student Evaluation & Educational Dashboard
 
-Welcome to your Computational Chemistry Lab workspace!
+## PI & Metadata
+- **PI/Developer:** Dr. Joshua John Klaassen
+- **ORCiD:** [0009-0007-1506-4401](https://orcid.org/0009-0007-1506-4401)
+- **GitHub Organization:** [ProfJJK-CoChem](https://github.com/ProfJJK-CoChem)
+- **CoChem User Manual:** [CoChem_User_Manual.md](https://github.com/ProfJJK-CoChem/CoChem-BASE/blob/main/CoChem_User_Manual.md)
+- **Method Matrix:** [Method_Matrix.md](https://github.com/ProfJJK-CoChem/CoChem-BASE/blob/main/Method_Matrix.md)
 
-If you have never written code before, don't worry—you do not need to be a computer scientist to run these labs. CoChem-SEED is designed to act as a virtual Teaching Assistant (TA), running complex chemistry simulations in the background and presenting you with a simple, interactive laboratory notebook.
+*Note: CoChem has recently migrated to the Valeev Stack (MPQC, F12) to expose students to state-of-the-art computational workflows and highly accurate explicitly correlated methods [M].*
 
----
+## What This Repository Does
+**CoChem-SEED** acts as a virtual Teaching Assistant (TA), bridging the gap between highly complex computational chemistry and introductory student lab environments. It allows students to execute professional-grade chemistry simulations directly from their web browsers without needing prior programming experience.
 
-## **🎯 What does this do?**
+Key capabilities include:
+- **Socratic Interactions:** Guides students through computational lab exercises with interactive, conceptual questions.
+- **FERPA Privacy Guards:** Employs rigorous cryptographic hashing to shield Student IDs. Personal data is 100% [D] scrubbed before writing to disk, ensuring strict privacy compliance [M].
+- **Automated PDF Compilation:** Strips away the complex raw Python backend code and compiles a formatted, readable PDF report upon completion, optimized for Canvas or Blackboard upload.
 
-CoChem-SEED allows you to execute professional-grade chemistry simulations (powered by advanced computational engines) right from your web browser:
+### Data Flow Architecture
+```mermaid
+flowchart TD
+    A["Jupyter Notebook UI"] --> B["SEED Interaction Layer"]
+    B --> C["CoChem Backend (Cloud)"]
+    C --> D["Data Sanitization (FERPA)"]
+    D --> E["PDF Compiler"]
+    E --> F["Canvas/Blackboard Submission"]
+```
 
-* **Socratic Interactions:** The system prompts you with interactive questions as you progress through your lab exercise.
-* **FERPA Privacy Guards:** Uses cryptographic hashing to protect your Student ID; personal data is never written to the disk in plain text.
-* **Automated PDF Compilation:** When you finish a lab exercise, the dashboard strips away raw Python code blocks and compiles a formatted PDF report ready for Canvas upload.
+## Setup & Installation
+For Instructors:
+1. Clone the repository: `git clone https://github.com/ProfJJK-CoChem/CoChem-SEED.git`
+2. Define the curriculum configurations inside the `seed_curriculum.db`.
+3. Provision JupyterHub or GitHub Codespaces environments referencing `requirements.txt`.
 
----
+For Students:
+No installation is required. Simply access the cloud workspace provided by your instructor.
 
-## **🚀 Getting Started (Quick Setup)**
-
-Your instructor has already pre-configured the backend settings. All you need to do is launch your notebook!
-
-1. **Open the Lab Workspace:** Click the workspace link provided by your professor (usually a GitHub Codespace or JupyterHub link).
-2. **Open the Notebook:** In the file list, double-click the target lab notebook (e.g., `Chemistry_Lab_1.ipynb` under the `notebooks/` directory).
-3. **Run the Initialization Cell:** Click inside the first gray cell and press `Shift + Enter` (or click the **Play** button at the top of your screen).
-4. **Follow the Prompts:** The interactive system will guide you step-by-step from there.
-
----
-
-## **📂 File Topology & Core Scripts**
-
-For developers and instructors, the core logic is structured under `core_logic/`:
-
-1. **[core_logic/cochem_seed_ingest.py](file:///d:/GitHub-Repo/CoChem-SEED/core_logic/cochem_seed_ingest.py)** (Reaction Selection Matrix):
-   * Renders the progressive disclosure dropdown panels for mechanism/substrate selection.
-   * Bootstrap-creates and verifies the curriculum database (`seed_curriculum.db`).
-
-2. **[core_logic/cochem_seed_dispatch.py](file:///d:/GitHub-Repo/CoChem-SEED/core_logic/cochem_seed_dispatch.py)** (Job Dispatcher):
-   * Handles local and remote execution routes for student molecular submissions.
-
-3. **[core_logic/cochem_seed_spectra.py](file:///d:/GitHub-Repo/CoChem-SEED/core_logic/cochem_seed_spectra.py)** (Spectra Emulator):
-   * Parses vibrational outputs and renders interactive IR/NMR plots.
-
-4. **[core_logic/cochem_seed_viewer.py](file:///d:/GitHub-Repo/CoChem-SEED/core_logic/cochem_seed_viewer.py)** (3D Coordinate Viewer):
-   * Integrates 3D structural renders directly into the notebook cells.
-
-5. **[core_logic/cochem_seed_export.py](file:///d:/GitHub-Repo/CoChem-SEED/core_logic/cochem_seed_export.py)** (PDF manuscript compiler):
-   * Generates clean report printouts for LMS uploads.
+## Getting Started
+1. Open the lab workspace URL in your browser.
+2. Navigate to the `notebooks/` directory and open your assigned `.ipynb` file.
+3. Click inside the first gray cell and press `Shift + Enter` to initialize the TA dashboard.
+4. Follow the interactive widgets to complete the assignment. Refer to the [User Manual](https://github.com/ProfJJK-CoChem/CoChem-BASE/blob/main/CoChem_User_Manual.md) if you encounter any environment errors.
 
 ---
-
-## **⚠️ Note on Session Restores**
-
-If you accidentally close your browser window or lose your internet connection during a quiz question, **do not panic.** CoChem-SEED automatically serializes your exact state to `eval_telemetry.json` and will restore your session when you re-open your lab notebook.
