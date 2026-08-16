@@ -12,7 +12,9 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "framer-motion": "^13.1.0",
-    "molstar": "^5.11.0"
+    "molstar": "^5.11.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.5",
