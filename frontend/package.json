@@ -1,0 +1,19 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "oxlint",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.5.4",
+    "framer-motion": "^13.1.0",
+    "molstar": "^5.11.0",
+    "postcss": "^8.5.26",
+    "tailwindcss": "^4.3.3"
+  }
+}

@@ -2,20 +2,22 @@
     "name": "CoChem-SEED-Pedagogical",
     "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bullseye",
     "features": {
+        "ghcr.io/devcontainers/features/node:1": {},
         "ghcr.io/devcontainers/features/github-cli:1": {}
     },
     "updateContentCommand": "pip install --upgrade pip",
-    "postCreateCommand": "pip install -r requirements.txt",
+    "postCreateCommand": "pip install -r backend/requirements.txt && cd frontend && npm install",
+    "forwardPorts": [3000, 8000],
     "customizations": {
         "vscode": {
             "settings": {
                 "python.defaultInterpreterPath": "/usr/local/bin/python",
-                "jupyter.alwaysTrustNotebooks": true,
                 "editor.formatOnSave": true
             },
             "extensions": [
                 "ms-python.python",
-                "ms-toolsai.jupyter"
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode"
             ]
         }
     }
