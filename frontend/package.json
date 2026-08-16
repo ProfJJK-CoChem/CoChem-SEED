@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
     "framer-motion": "^13.1.0",
     "molstar": "^5.11.0"
   },
